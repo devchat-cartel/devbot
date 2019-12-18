@@ -5,17 +5,12 @@ import datetime
 import requests
 import discord
 from discord.ext import commands
-from discord.ext.commands import Bot
 
 GITHUB_CHECK_INTERVAL = 60
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 client = discord.Client()
-bot = discord.ext.commands.Bot('. ')
-
-# the #general channel
-general = bot.get_channel(551913608804827178)
-
+# bot = commands.Bot('. ')
 
 def get_last_github_push():
     response = requests.get(
@@ -29,11 +24,31 @@ def get_last_github_push():
     except:
         return 'Unknown'
 
+# @bot.command(name='')
+# async def _message(ctx):
+#     print(ctx.message.content)
+
+# @bot.command(name='private')
+# async def _priv8(ctx):
+#     await ctx.send('Found me !')
+
+# @bot.command()
+# async def last_commit(ctx):
+#     await ctx.send(
+#         'Last commit was at {last_push}'.format(
+#             last_push=get_last_github_push()
+#         )
+#     )
+
+# @bot.command()
+# async def echo(ctx, message):
+#     await ctx.send(message)
 
 async def background_task_github_push():
-    await bot.wait_until_ready()
+    await client.wait_until_ready()
+    general = client.get_channel(518770364042444850)
     latest_push = None
-    while not bot.is_closed():
+    while not client.is_closed():
         try:
             last_push = get_last_github_push()
             if latest_push and last_push > latest_push:
@@ -53,9 +68,8 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    if message.author == client.user:
-        return
-    # if message.author != client.user:
+    # if message.author == client.user:
+    #     return
     print(
         ' | '.join(
             str(e)
@@ -68,20 +82,6 @@ async def on_message(message):
         )
     )
 
-    if message.content.startswith('. '):
-        if message.content[2:].startswith('last'):
-            await message.channel.send(
-                'Last commit was at {last_push}'.format(
-                    last_push=get_last_github_push()
-                )
-            )
-        else:
-            await message.channel.send(
-                'Unknown command: {message}'.format(
-                    message=message.content[2:]
-                )
-            )
-
 if __name__ == '__main__':
     client.loop.create_task(
         background_task_github_push()
@@ -92,3 +92,9 @@ if __name__ == '__main__':
             ''
         )
     )
+    # bot.run(
+    #     os.getenv(
+    #         'TOKEN',
+    #         ''
+    #     )
+    # )
