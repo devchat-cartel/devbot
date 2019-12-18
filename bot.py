@@ -23,10 +23,6 @@ def get_last_github_push():
     except:
         return 'Unknown'
 
-@bot.command(name='')
-async def _message(ctx):
-    print(ctx.message.content)
-
 @bot.command(name='private')
 async def _priv8(ctx):
     await ctx.send('Found me !')
@@ -71,10 +67,10 @@ async def on_message(ctx):
         ' | '.join(
             str(e)
             for e in (
-                ctx.message.guild,
-                ctx.message.channel,
-                ctx.message.author,
-                ctx.message.content
+                ctx.guild,
+                ctx.channel,
+                ctx.author,
+                ctx.content
             )
         )
     )
