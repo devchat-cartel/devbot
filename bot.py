@@ -46,7 +46,7 @@ def get_last_github_push():
 
 async def background_task_github_push():
     await client.wait_until_ready()
-    general = client.get_channel(518770364042444850)
+    general = client.get_channel(551913608804827178)
     latest_push = None
     while not client.is_closed():
         try:
