@@ -4,15 +4,17 @@ import datetime
 
 import requests
 import discord
+from discord.ext import commands
+from discord.ext.commands import Bot
 
 GITHUB_CHECK_INTERVAL = 60
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 client = discord.Client()
-bot = discord.ext.commands.Bot()
+bot = discord.ext.commands.Bot('. ')
 
 # the #general channel
-general = bot.get_channel(518770364042444850)
+general = bot.get_channel(551913608804827178)
 
 
 def get_last_github_push():
@@ -68,13 +70,13 @@ async def on_message(message):
 
     if message.content.startswith('. '):
         if message.content[2:].startswith('last'):
-            await general.send(
+            await message.channel.send(
                 'Last commit was at {last_push}'.format(
                     last_push=get_last_github_push()
                 )
             )
         else:
-            await general.send(
+            await message.channel.send(
                 'Unknown command: {message}'.format(
                     message=message.content[2:]
                 )
