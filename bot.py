@@ -40,7 +40,7 @@ async def last_commit(ctx):
 
 
 @bot.command()
-async def echo(ctx, message):
+async def echo(ctx, *, message):
     await ctx.send(message)
 
 
@@ -68,6 +68,8 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
+    if message.author == bot.user:
+        return
     print(
         ' | '.join(
             str(e)
