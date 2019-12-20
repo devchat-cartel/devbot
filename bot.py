@@ -4,11 +4,13 @@ import datetime
 
 import requests
 import discord
+from discord.ext import commands
 
 GITHUB_CHECK_INTERVAL = 60
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
-client = discord.Client()
+bot = commands.Bot('. ')
+
 
 def get_last_github_push():
     response = requests.get(
@@ -22,66 +24,77 @@ def get_last_github_push():
     except:
         return 'Unknown'
 
+
+@bot.command(name='private')
+async def _priv8(ctx):
+    await ctx.send('Found me !')
+
+
+@bot.command()
+async def last_commit(ctx):
+    await ctx.send(
+        'Last commit was at {last_push}'.format(
+            last_push=get_last_github_push()
+        )
+    )
+
+
+@bot.command()
+async def echo(ctx, *, message):
+    await ctx.send(message)
+
+
 async def background_task_github_push():
-    await client.wait_until_ready()
+    await bot.wait_until_ready()
+    general = bot.get_channel(551913608804827178)
     latest_push = None
-    while not client.is_closed:
+    while not bot.is_closed():
         try:
             last_push = get_last_github_push()
-            if latest_push != None and last_push > latest_push:
+            if latest_push and last_push > latest_push:
                 latest_push = last_push
-                await client.send_message(
-                    client.get_channel('518770364042444850'),
-                    'New commit found at {latest_push} !'.format(
-                        latest_push=get_last_github_push()
-                    )
-                )
+                await general.send(f'New commit found at {latest_push} !')
             else:
                 await asyncio.sleep(GITHUB_CHECK_INTERVAL)
         except Exception as e:
             print(str(e))
             await asyncio.sleep(GITHUB_CHECK_INTERVAL)
 
-@client.event
+
+@bot.event
 async def on_ready():
     print('Ready')
 
-@client.event
+
+@bot.event
 async def on_message(message):
-    if message.author != client.user:
-        print(
-            ' | '.join(
-                str(e)
-                for e in (
-                    message.server,
-                    message.channel,
-                    message.author,
-                    message.content
-                )
+    if message.author == bot.user:
+        return
+    print(
+        ' | '.join(
+            str(e)
+            for e in (
+                message.guild,
+                message.channel,
+                message.author,
+                message.content
             )
         )
+    )
+    await bot.process_commands(message)
 
-        if message.content.startswith('. '):
-            if message.content[2:].startswith('last'):
-                await client.send_message(
-                    message.channel,
-                    'Last commit was at {last_push}'.format(
-                        last_push=get_last_github_push()
-                    )
-                )
-            else:
-                await client.send_message(
-                    message.channel,
-                    'Unknown command: {message}'.format(
-                        message=message.content[2:]
-                    )
-                )
+
+@bot.event
+async def on_command_error(ctx, error):
+    await ctx.send(f"Unknown command: {ctx.message.content[2:]}")
+    await commands.Bot.on_command_error(bot, ctx, error)
+
 
 if __name__ == '__main__':
-    client.loop.create_task(
+    bot.loop.create_task(
         background_task_github_push()
     )
-    client.run(
+    bot.run(
         os.getenv(
             'TOKEN',
             ''
