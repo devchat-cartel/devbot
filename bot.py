@@ -11,6 +11,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 bot = commands.Bot('. ')
 
+
 def get_last_github_push():
     response = requests.get(
         'https://api.github.com/repos/devchat-cartel/devbot'
@@ -23,9 +24,11 @@ def get_last_github_push():
     except:
         return 'Unknown'
 
+
 @bot.command(name='private')
 async def _priv8(ctx):
     await ctx.send('Found me !')
+
 
 @bot.command()
 async def last_commit(ctx):
@@ -35,9 +38,11 @@ async def last_commit(ctx):
         )
     )
 
+
 @bot.command()
 async def echo(ctx, message):
     await ctx.send(message)
+
 
 async def background_task_github_push():
     await bot.wait_until_ready()
@@ -62,18 +67,26 @@ async def on_ready():
 
 
 @bot.event
-async def on_message(ctx):
+async def on_message(message):
     print(
         ' | '.join(
             str(e)
             for e in (
-                ctx.guild,
-                ctx.channel,
-                ctx.author,
-                ctx.content
+                message.guild,
+                message.channel,
+                message.author,
+                message.content
             )
         )
     )
+    await bot.process_commands(message)
+
+
+@bot.event
+async def on_command_error(ctx, error):
+    await ctx.send(f"Unknown command: {ctx.message.content[2:]}")
+    await commands.Bot.on_command_error(bot, ctx, error)
+
 
 if __name__ == '__main__':
     bot.loop.create_task(
