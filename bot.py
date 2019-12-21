@@ -94,6 +94,7 @@ if __name__ == '__main__':
     bot.loop.create_task(
         background_task_github_push()
     )
+    bot.load_extension('bitmex_caller')
     bot.run(
         os.getenv(
             'TOKEN',
