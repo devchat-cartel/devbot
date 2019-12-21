@@ -126,11 +126,27 @@ namespace CartelBotAPI.Controllers
         {
             try
             {
-                return BadRequest("not implemented");
+                if(string.IsNullOrEmpty(name))
+                {
+                    return BadRequest("invalid name");
+                }
+
+                AmazonDynamoDBClient amazonDynamoDBClient = new AmazonDynamoDBClient();
+                Table table = Table.LoadTable(amazonDynamoDBClient, "CartelBotRegistry");
+
+                try
+                {
+                    await table.DeleteItemAsync(name);
+                    return Ok($"removed :{name}");
+                }
+                catch
+                {
+                    return BadRequest("something went wrong");
+                }
             }
             catch
             {
-                return BadRequest("not implemented");
+                return BadRequest("something went wrong");
             }
         }
     }
