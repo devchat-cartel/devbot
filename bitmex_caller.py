@@ -32,12 +32,12 @@ class BitmexCaller(commands.Cog):
         resp = await client.position_GET()
 
         currentQty = resp[0]['currentQty']
-        direction = 'LONG'
+        direction = 'LONG:green_circle:'
         if currentQty < 0:
-            direction = 'SHORT'
+            direction = 'SHORT:red_circle:'
         avgEntryPrice = resp[0]['avgEntryPrice']
         await ctx.send(f"{str(user)} Position:"
-                       f"\n{currentQty} contracts {direction} from entry {avgEntryPrice}")
+                       f"\n**{currentQty}** contracts {direction} from entry **{avgEntryPrice}**")
 
 
 def setup(bot):
