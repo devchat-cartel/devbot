@@ -19,14 +19,17 @@ class BitmexCaller(commands.Cog):
         resp = await requests_async.get(self.base_url + '/position',
                                         headers=self.backend_headers,
                                         params={'name': user.id})
-        if not resp.json():
-            await ctx.send(f'No position for {user.mention} right now!')
-            return
-        resp_dict = resp.json()[0]
         print('resp', resp.content)
-        if 'error' in resp_dict:
-            await ctx.send(f'There was an error ({resp_dict["error"]["name"]}):'
-                           f'\n{resp_dict["error"]["message"]}')
+        if 'error' in resp.json():
+            await ctx.send(f'There was an error ({resp.json()["error"]["name"]}):'
+                           f'\n{resp.json()["error"]["message"]}')
+            return
+        try:
+            resp_dict = resp.json()[0]
+        except KeyError as e:
+            await ctx.send(f'No position for {user.mention} right now!'
+                           # f'\n(or there was an error connecting to the server).'
+                           f'')
             return
         currentQty = resp_dict['currentQty']
         direction = 'LONG:green_circle:'
