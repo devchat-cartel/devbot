@@ -1,3 +1,4 @@
+import sys
 import os
 import asyncio
 import datetime
@@ -94,10 +95,12 @@ if __name__ == '__main__':
     bot.loop.create_task(
         background_task_github_push()
     )
+    bot.BACKEND_KEY = sys.argv[2]
     bot.load_extension('bitmex_caller')
     bot.run(
-        os.getenv(
-            'TOKEN',
-            ''
-        )
+        # os.getenv(
+        #     'TOKEN',
+        #     ''
+        # )
+        sys.argv[1]
     )

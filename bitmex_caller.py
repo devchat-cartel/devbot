@@ -1,3 +1,4 @@
+import sys
 import os
 import requests_async
 from discord.ext import commands
@@ -7,7 +8,8 @@ class BitmexCaller(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.base_url = 'https://d6oaq62km8.execute-api.us-east-1.amazonaws.com/Prod/cartelbot'
-        self.backend_headers = {'X-API-KEY': os.getenv('BACKEND_KEY')}
+        # self.backend_headers = {'X-API-KEY': os.getenv('BACKEND_KEY')}
+        self.backend_headers = {'X-API-KEY': bot.BACKEND_KEY}
 
     @commands.command()
     async def position(self, ctx):
