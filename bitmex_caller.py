@@ -18,7 +18,11 @@ class BitmexCaller(commands.Cog):
         resp = await requests_async.get(self.base_url + '/position',
                                         headers=self.backend_headers,
                                         params={'name': user.id})
-        resp_dict = resp.json()[0]
+        resp_dict = resp.json()
+        if 'error' in resp_dict:
+            await ctx.send(f'There was an error ({resp_dict["error"]["name"]}):'
+                           f'\n{resp_dict["error"]["message"]}')
+            return
         currentQty = resp_dict['currentQty']
         direction = 'LONG:green_circle:'
         if currentQty < 0:
@@ -48,6 +52,18 @@ class BitmexCaller(commands.Cog):
         else:
             await ctx.send(f'Add action failed: status code {resp.status_code}. Please try again later.')
             return
+
+    @commands.command()
+    @commands.dm_only()
+    async def remove(self, ctx):
+        user = ctx.author
+        resp = await requests_async.get(self.base_url + '/remove',
+                                        headers=self.backend_headers,
+                                        params={'name': user.id})
+        if resp.status_code == requests_async.codes.ok:
+            await ctx.send('Removed your API keys successfully.')
+        else:
+            await ctx.send(f'Remove action failed: status code {resp.status_code}. Please try again later.')
 
 
 def setup(bot):
