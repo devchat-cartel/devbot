@@ -12,13 +12,18 @@ class BitmexCaller(commands.Cog):
     @commands.command()
     async def position(self, ctx):
         user = ctx.author
+        print(f'Getting /position for user: {str(user)}')
         # action = '/position'
         # data = f'name={user.id}'
         # full_url = self.base_url + action + '?' + data
         resp = await requests_async.get(self.base_url + '/position',
                                         headers=self.backend_headers,
                                         params={'name': user.id})
-        resp_dict = resp.json()
+        if not resp.json():
+            await ctx.send(f'No position for {user.mention} right now!')
+            return
+        resp_dict = resp.json()[0]
+        print('resp', resp.content)
         if 'error' in resp_dict:
             await ctx.send(f'There was an error ({resp_dict["error"]["name"]}):'
                            f'\n{resp_dict["error"]["message"]}')
@@ -28,13 +33,14 @@ class BitmexCaller(commands.Cog):
         if currentQty < 0:
             direction = 'SHORT:red_circle:'
         avgEntryPrice = resp_dict['avgEntryPrice']
-        await ctx.send(f"{str(user)} Position:"
+        await ctx.send(f"{user.mention}'s Position:"
                        f"\n**{currentQty}** contracts {direction} from entry **{avgEntryPrice}**")
 
     @commands.command()
     @commands.dm_only()
     async def api(self, ctx, key, secret):
         user = ctx.author
+        print(f'Adding API keys for user: {str(user)}')
 
         # check parameter lengths
         if len(key) != 24 or len(secret) != 48:
@@ -47,6 +53,7 @@ class BitmexCaller(commands.Cog):
                                         params={'name': user.id,
                                                 'key': key,
                                                 'secret': secret})
+        print('resp', resp.content)
         if resp.status_code == requests_async.codes.ok:
             await ctx.send('Added your API key info successfully! Try the `. position` command in the server.')
         else:
@@ -57,9 +64,11 @@ class BitmexCaller(commands.Cog):
     @commands.dm_only()
     async def remove(self, ctx):
         user = ctx.author
+        print(f'Removing API keys for user: {str(user)}')
         resp = await requests_async.get(self.base_url + '/remove',
                                         headers=self.backend_headers,
                                         params={'name': user.id})
+        print('resp', resp.content)
         if resp.status_code == requests_async.codes.ok:
             await ctx.send('Removed your API keys successfully.')
         else:
