@@ -27,10 +27,11 @@ class BitmexCaller(commands.Cog):
             await ctx.send(f'There was an error ({resp.json()["error"]["name"]}):'
                            f'\n{resp.json()["error"]["message"]}')
             return
-        try:
+
+        if resp.status_code != 204:
             resp_dict = resp.json()[0]
             currentQty = resp_dict['currentQty']
-        except KeyError as e:
+        else:
             await ctx.send(f'No position for {user.mention} right now!'
                            # f'\n(or there was an error connecting to the server).'
                            f'\nHave you DMed me your API key yet?'
