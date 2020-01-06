@@ -30,19 +30,24 @@ class BitmexCaller(commands.Cog):
                            f'\n(command is: . api <key> <secret>')
             return
 
-        resp_dict = resp.json()[0]
-        currentQty = resp_dict['currentQty']
         print('resp', resp.content)
-        if 'error' in resp.json():
+        resp_json = resp.json()
+
+        if 'error' in resp_json:
             await ctx.send(f'There was an error ({resp.json()["error"]["name"]}):'
                            f'\n{resp.json()["error"]["message"]}')
             return
 
+        currentQty = 0 if resp_json == [] else resp_dict['currentQty']
+        avgEntryPrice = '--' if currentQty == 0 else resp_dict['avgEntryPrice']
 
-        direction = 'LONG :green_circle:'
-        if currentQty < 0:
+        if currentQty > 0:
+            direction = 'LONG :green_circle:'
+        elif currentQty < 0:
             direction = 'SHORT :red_circle:'
-        avgEntryPrice = resp_dict['avgEntryPrice']
+        else:
+            direction = 'FLAT :zero:'
+
         await ctx.send(f"{user.mention}'s Position:"
                        f"\n**{currentQty}** contracts {direction} from entry **{avgEntryPrice}**")
 
