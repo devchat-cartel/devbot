@@ -65,8 +65,9 @@ async def background_task_github_push():
 @bot.event
 async def on_ready():
     print('Ready')
-    async for guild in bot.fetch_guilds(limit=150):
-        print(guild.name)
+    guilds = await bot.fetch_guilds(limit=5).flatten()     # guilds is now a list of Guild...
+    for guild in guilds:
+        print(guild)
 
 @bot.event
 async def on_message(message):
