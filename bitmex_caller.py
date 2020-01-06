@@ -34,16 +34,9 @@ class BitmexCaller(commands.Cog):
         print('resp', resp.content)
         resp_json = resp.json()
 
-        position_item = [e for e in resp_json if e['symbol'] == symbol][0]
-        currentQty = 0 if position_item == [] else position_item['currentQty']
-        avgEntryPrice = '--' if currentQty == 0 else position_item['avgEntryPrice']
-
-        # # ? i don't think this works ?
-        #
-        # if 'error' in position_item:
-        #     await ctx.send(f'There was an error ({resp.json()["error"]["name"]}):'
-        #                    f'\n{resp.json()["error"]["message"]}')
-        #     return
+        position_item = [e for e in resp_json if e['symbol'] == symbol]
+        currentQty = 0 if position_item == [] else position_item[0]['currentQty']
+        avgEntryPrice = '--' if currentQty == 0 else position_item[0]['avgEntryPrice']
 
         if currentQty > 0:
             direction = 'LONG :green_circle:'
