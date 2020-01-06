@@ -13,7 +13,7 @@ class BitmexCaller(commands.Cog):
 
     @commands.command()
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def position(self, ctx):
+    async def position(self, ctx, symbol='XBTUSD'):
         user = ctx.author
         print(f'Getting /position for user: {str(user)}')
         # action = '/position'
@@ -33,13 +33,16 @@ class BitmexCaller(commands.Cog):
         print('resp', resp.content)
         resp_json = resp.json()
 
-        if 'error' in resp_json:
-            await ctx.send(f'There was an error ({resp.json()["error"]["name"]}):'
-                           f'\n{resp.json()["error"]["message"]}')
-            return
+        position_item = [e for e in resp_json if e['symbol'] == str(symbol).upper()]
+        currentQty = 0 if position_item == [] else position_item['currentQty']
+        avgEntryPrice = '--' if currentQty == 0 else position_item['avgEntryPrice']
 
-        currentQty = 0 if resp_json == [] else resp_json['currentQty']
-        avgEntryPrice = '--' if currentQty == 0 else resp_json['avgEntryPrice']
+        # # ? i don't think this works ?
+        #
+        # if 'error' in position_item:
+        #     await ctx.send(f'There was an error ({resp.json()["error"]["name"]}):'
+        #                    f'\n{resp.json()["error"]["message"]}')
+        #     return
 
         if currentQty > 0:
             direction = 'LONG :green_circle:'
