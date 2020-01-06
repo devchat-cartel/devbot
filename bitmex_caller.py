@@ -28,12 +28,13 @@ class BitmexCaller(commands.Cog):
             return
         try:
             resp_dict = resp.json()[0]
+            currentQty = resp_dict['currentQty']
         except KeyError as e:
             await ctx.send(f'No position for {user.mention} right now!'
                            # f'\n(or there was an error connecting to the server).'
                            f'')
             return
-        currentQty = resp_dict['currentQty']
+
         direction = 'LONG:green_circle:'
         if currentQty < 0:
             direction = 'SHORT:red_circle:'
