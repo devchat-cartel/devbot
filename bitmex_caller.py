@@ -12,6 +12,7 @@ class BitmexCaller(commands.Cog):
         self.backend_headers = {'X-API-KEY': bot.BACKEND_KEY}
 
     @commands.command()
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def position(self, ctx):
         user = ctx.author
         print(f'Getting /position for user: {str(user)}')
@@ -32,7 +33,8 @@ class BitmexCaller(commands.Cog):
         except KeyError as e:
             await ctx.send(f'No position for {user.mention} right now!'
                            # f'\n(or there was an error connecting to the server).'
-                           f'')
+                           f'\nHave you DMed me your API key yet?'
+                           f'\n(command is: . api <key> <secret>')
             return
 
         direction = 'LONG:green_circle:'

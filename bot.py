@@ -65,7 +65,8 @@ async def background_task_github_push():
 @bot.event
 async def on_ready():
     print('Ready')
-
+    async for guild in bot.fetch_guilds(limit=150):
+        print(guild.name)
 
 @bot.event
 async def on_message(message):
@@ -88,7 +89,9 @@ async def on_message(message):
 @bot.event
 async def on_command_error(ctx, error):
     await ctx.send(f"Unknown command: {ctx.message.content[2:]}")
-    await commands.Bot.on_command_error(bot, ctx, error)
+    if error == commands.CommandOnCooldown:
+        await ctx.send(f"Chill out, {ctx.author.mention}! You have to wait 10 seconds between commands... stop spamming, retard")
+    await commands.Bot.on_command_error(bot, ctx, error)    # pretty much just for printing to console
 
 
 if __name__ == '__main__':
