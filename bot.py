@@ -136,10 +136,13 @@ if __name__ == '__main__':
     )
     bot.BACKEND_KEY = sys.argv[2]
     bot.load_extension('bitmex_caller')
-    bot.run(
-        # os.getenv(
-        #     'TOKEN',
-        #     ''
-        # )
-        sys.argv[1]
-    )
+    try:
+        bot.run(
+            # os.getenv(
+            #     'TOKEN',
+            #     ''
+            # )
+            sys.argv[1]
+        )
+    except (KeyboardInterrupt):
+        sys.exit()
