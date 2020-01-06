@@ -34,7 +34,7 @@ class BitmexCaller(commands.Cog):
         print('resp', resp.content)
         resp_json = resp.json()
 
-        position_item = [e for e in resp_json if e['symbol'] == symbol]
+        position_item = [e for e in resp_json if e['symbol'] == symbol][0]
         currentQty = 0 if position_item == [] else position_item['currentQty']
         avgEntryPrice = '--' if currentQty == 0 else position_item['avgEntryPrice']
 
