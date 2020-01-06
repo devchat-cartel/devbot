@@ -35,11 +35,9 @@ async def _priv8(ctx):
 @bot.command()
 @commands.cooldown(1, 10, commands.BucketType.user)
 async def last_commit(ctx):
-    await ctx.send(
-        'Last commit was at {last_push}'.format(
-            last_push=get_last_github_push()
-        )
-    )
+    last_push_ago = datetime.datetime.now() - get_last_github_push()
+    last_push_ago -= datetime.timedelta(microseconds=last_push_ago.microseconds)
+    await ctx.send(f'Last commit was {last_push_ago} ago')
 
 
 @bot.command()

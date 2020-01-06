@@ -38,8 +38,8 @@ class BitmexCaller(commands.Cog):
                            f'\n{resp.json()["error"]["message"]}')
             return
 
-        currentQty = 0 if resp_json == [] else resp_dict['currentQty']
-        avgEntryPrice = '--' if currentQty == 0 else resp_dict['avgEntryPrice']
+        currentQty = 0 if resp_json == [] else resp_json['currentQty']
+        avgEntryPrice = '--' if currentQty == 0 else resp_json['avgEntryPrice']
 
         if currentQty > 0:
             direction = 'LONG :green_circle:'
