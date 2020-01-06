@@ -22,25 +22,26 @@ class BitmexCaller(commands.Cog):
         resp = await requests_async.get(self.base_url + '/position',
                                         headers=self.backend_headers,
                                         params={'name': user.id})
-        print('resp', resp.content)
-        if 'error' in resp.json():
-            await ctx.send(f'There was an error ({resp.json()["error"]["name"]}):'
-                           f'\n{resp.json()["error"]["message"]}')
-            return
 
-        if resp.status_code != 204:
-            resp_dict = resp.json()[0]
-            currentQty = resp_dict['currentQty']
-        else:
+        if resp.status_code == 204:
             await ctx.send(f'No position for {user.mention} right now!'
                            # f'\n(or there was an error connecting to the server).'
                            f'\nHave you DMed me your API key yet?'
                            f'\n(command is: . api <key> <secret>')
             return
 
-        direction = 'LONG:green_circle:'
+        resp_dict = resp.json()[0]
+        currentQty = resp_dict['currentQty']
+        print('resp', resp.content)
+        if 'error' in resp.json():
+            await ctx.send(f'There was an error ({resp.json()["error"]["name"]}):'
+                           f'\n{resp.json()["error"]["message"]}')
+            return
+
+
+        direction = 'LONG :green_circle:'
         if currentQty < 0:
-            direction = 'SHORT:red_circle:'
+            direction = 'SHORT :red_circle:'
         avgEntryPrice = resp_dict['avgEntryPrice']
         await ctx.send(f"{user.mention}'s Position:"
                        f"\n**{currentQty}** contracts {direction} from entry **{avgEntryPrice}**")
