@@ -15,6 +15,7 @@ class BitmexCaller(commands.Cog):
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def position(self, ctx, symbol='XBTUSD'):
         user = ctx.author
+        symbol = str(symbol).upper()
         print(f'Getting /position for user: {str(user)}')
         # action = '/position'
         # data = f'name={user.id}'
@@ -33,7 +34,7 @@ class BitmexCaller(commands.Cog):
         print('resp', resp.content)
         resp_json = resp.json()
 
-        position_item = [e for e in resp_json if e['symbol'] == str(symbol).upper()]
+        position_item = [e for e in resp_json if e['symbol'] == symbol]
         currentQty = 0 if position_item == [] else position_item['currentQty']
         avgEntryPrice = '--' if currentQty == 0 else position_item['avgEntryPrice']
 
