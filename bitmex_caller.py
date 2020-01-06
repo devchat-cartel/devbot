@@ -46,7 +46,7 @@ class BitmexCaller(commands.Cog):
             direction = 'FLAT :zero:'
 
         await ctx.send(f"{user.mention}'s Position:"
-                       f"\n**{currentQty}** contracts {direction} from entry **{avgEntryPrice}**")
+                       f"\n**{currentQty}** {symbol} {direction} from entry **{avgEntryPrice}**")
 
     @commands.command()
     @commands.dm_only()
