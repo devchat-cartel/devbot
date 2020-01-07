@@ -94,8 +94,8 @@ async def help(ctx):
                 `. position`
                 And your current position will be displayed, with the # of contracts,
                 long or short, and your entry price.
-            """[:-1] # remove trailing newline
-        )
+            """
+        )[1:-1] # remove leading and trailing newlines
     )
 
 
