@@ -11,7 +11,8 @@ from discord.ext import commands
 GITHUB_CHECK_INTERVAL = 60
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
-bot = commands.Bot('. ')
+bot = commands.Bot('. ',
+                   case_insensitive=True)
 
 
 def get_last_github_push():
@@ -64,36 +65,51 @@ async def background_task_github_push():
             await asyncio.sleep(GITHUB_CHECK_INTERVAL)
 
 
-@commands.command()
+bot.remove_command("help")
+@bot.command()
 async def help(ctx):
-    dmchannel = ctx.author.create_dm()
+    dmchannel = await ctx.author.create_dm()
     await dmchannel.send(textwrap.dedent(f"""
-            Position tracker help :)))))
-            COMMANDS
-                . help               | displays positiontracker's help menu
-                . position           | shows your current /position in a public channel (# contracts, long/short, entry)
-                . echo <message>     | echoes back your message in the channel
-                . api <key> <secret> | (DM-only) sets up your Bitmex API credentials
-                . remove             | (DM-only) removes your Bitmex API credentials from the bot
+            **COMMANDS**
+            ```
+            . help
+            displays positiontracker's help menu
 
-            API KEY SETUP
-                To retrieve your current /position, you need to tell the bot your Bitmex API keys.
-                In your bitmex account settings, create a READ-ONLY API key (do not select 'order'
-                or 'order cancel' in the drop-down; just leave it on the default '-'.
+            . position
+            shows your current /position in a public channel
 
-                Then, DM me (the bot) using the command:
-                `. api <key> <secret>`
-                for example:
-                `. api . api nBRcCH6uE49KgLCMjJn09DEA -jNDyaMgwqoZT8V3-4Hmx5oA5UeNOYICNk3dl4H6w1-s5sxA
+            . echo <message>
+            echoes back your message in the channel
 
-                If you want the bot to forget your API keys, just DM me the '. remove' command instead:
-                `. remove`
+            . api <key> <secret>
+            (DM-only) sets up your Bitmex API credentials
 
-            SHOWING YOUR POSITION
-                In a public channel (like #bitmex), simply type the '. position' command:
-                `. position`
-                And your current position will be displayed, with the # of contracts,
-                long or short, and your entry price.
+            . remove
+            (DM-only) removes your Bitmex API credentials from the bot
+            ```
+            **API KEY SETUP**
+
+            To retrieve your current /position, you need to tell the bot your Bitmex API keys.
+
+            In your bitmex account settings, create a READ-ONLY API key (do not select 'order'
+            or 'order cancel' in the drop-down; just leave it on the default '-').
+
+            Then, DM me (the bot) using the command:
+            `. api <key> <secret>`
+
+            for example:
+            `. api nBRcCH6uE49KgLCMjJn09DEA -jNDyaMgwqoZT8V3-4Hmx5oA5UeNOYICNk3dl4H6w1-s5sxA`
+
+            **SHOWING YOUR POSITION**
+
+            In a public channel (like #bitmex), typing:
+            `. position`
+            will display your current position with the # of contracts, long/short, and entry price.
+
+            **REMOVING YOUR API KEYS**
+
+            To erase your API keys (DM me):
+            `. remove`
             """
         )[1:-1] # remove leading and trailing newlines
     )

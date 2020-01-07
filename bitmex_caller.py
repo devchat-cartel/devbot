@@ -27,8 +27,8 @@ class BitmexCaller(commands.Cog):
         if resp.status_code == 204:
             await ctx.send(f'No position for {user.mention} right now!'
                            # f'\n(or there was an error connecting to the server).'
-                           f'\nHave you DMed me your API key yet?'
-                           f'\n(command is: . api <key> <secret>')
+                           f'\nHave you DMed me your (read-only) API key yet?'
+                           f'\n(command is: . api <key> <secret>)')
             return
 
         print('resp', resp.content)
