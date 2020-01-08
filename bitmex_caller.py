@@ -34,17 +34,19 @@ class BitmexCaller(commands.Cog):
         print('resp', resp.content)
         resp_json = resp.json()
 
-        position_item = [e for e in resp_json if e['symbol'] == symbol]
+        data = [e for e in resp_json if e['symbol'] == symbol]
 
-        if position_item == [] or position_item[0]['currentQty'] == 0:
+        if data == [] or data[0]['currentQty'] == 0:
             currentQty = 0
             entry = '--'
+            pnl = 0
         else:
-            currentQty = position_item[0]['currentQty']
-            if position_item[0]['avgEntryPrice'] > 0.1 ** 4:
-                entry = position_item[0]['avgEntryPrice']
+            currentQty = data[0]['currentQty']
+            pnl = f"{data[0]['unrealisedPnl']:.4f}"
+            if data[0]['avgEntryPrice'] > 0.1 ** 4:
+                entry = data[0]['avgEntryPrice']
             else:
-                entry = f"{position_item[0]['avgEntryPrice']:.8f}"
+                entry = f"{data[0]['avgEntryPrice']:.8f}"
 
         if currentQty > 0:
             direction = 'LONG :green_circle:'
@@ -53,7 +55,7 @@ class BitmexCaller(commands.Cog):
         else:
             direction = 'FLAT :zero:'
 
-        await ctx.send(f"{user.mention} is {direction} **{currentQty} {symbol}** from entry **{entry}**")
+        await ctx.send(f"{user.mention} is {direction} **{currentQty} {symbol}** from entry **{entry}** with PNL {pnl} %")
 
     @commands.command()
     @commands.dm_only()
