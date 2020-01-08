@@ -42,7 +42,7 @@ class BitmexCaller(commands.Cog):
             pnl = 0
         else:
             currentQty = data[0]['currentQty']
-            pnl = f"{data[0]['unrealisedPnl']:.4f}"
+            pnl = data[0]['unrealisedPnl'] / (10 ** 8)
             if data[0]['avgEntryPrice'] > 0.1 ** 4:
                 entry = data[0]['avgEntryPrice']
             else:
@@ -55,7 +55,7 @@ class BitmexCaller(commands.Cog):
         else:
             direction = 'FLAT :zero:'
 
-        await ctx.send(f"{user.mention} is {direction} **{currentQty} {symbol}** from entry **{entry}** with PNL {pnl} %")
+        await ctx.send(f"{user.mention} is {direction} **{currentQty} {symbol}** from entry **{entry}** with PNL {pnl} XBT")
 
     @commands.command()
     @commands.dm_only()
