@@ -43,6 +43,8 @@ class BitmexCaller(commands.Cog):
         else:
             currentQty = data[0]['currentQty']
             pnl = data[0]['unrealisedPnl'] / (10 ** 8)
+            if pnl < 0.1 ** 4:
+                pnl = f'{pnl:.8f}'
             if data[0]['avgEntryPrice'] > 0.1 ** 4:
                 entry = data[0]['avgEntryPrice']
             else:

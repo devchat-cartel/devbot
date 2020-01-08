@@ -28,12 +28,6 @@ def get_last_github_push():
         return 'Unknown'
 
 
-@bot.command(name='private')
-@commands.cooldown(1, 10, commands.BucketType.user)
-async def _priv8(ctx):
-    await ctx.send('Found me !')
-
-
 @bot.command()
 @commands.cooldown(1, 10, commands.BucketType.user)
 async def last_commit(ctx):
@@ -42,7 +36,7 @@ async def last_commit(ctx):
     await ctx.send(f'Last commit was {last_push_ago} ago')
 
 
-@bot.command()
+@bot.command(name='private')
 @commands.cooldown(1, 10, commands.BucketType.user)
 async def echo(ctx, *, message):
     await ctx.send(message)
@@ -77,9 +71,6 @@ async def help(ctx):
 
             . position
             shows your current /position in a public channel
-
-            . echo <message>
-            echoes back your message in the channel
 
             . api <key> <secret>
             (DM-only) sets up your Bitmex API credentials
