@@ -44,7 +44,7 @@ class BitmexCaller(commands.Cog):
             if position_item[0]['avgEntryPrice'] > 0.1 ** 4:
                 entry = position_item[0]['avgEntryPrice']
             else:
-                entry = f'{position_item[0]['avgEntryPrice']:.8f}'
+                entry = f"{position_item[0]['avgEntryPrice']:.8f}"
 
         if currentQty > 0:
             direction = 'LONG :green_circle:'
