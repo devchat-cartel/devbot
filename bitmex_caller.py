@@ -36,7 +36,7 @@ class BitmexCaller(commands.Cog):
 
         position_item = [e for e in resp_json if e['symbol'] == symbol]
 
-        if position_item == []:
+        if position_item == [] or position_item[0]['currentQty'] == 0:
             currentQty = 0
             entry = '--'
         else:
