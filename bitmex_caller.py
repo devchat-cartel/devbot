@@ -8,15 +8,66 @@ from discord.ext import commands
 class BitmexCaller(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.allowed_symbols = [
+            'XBT',
+            'ETH',
+            'BCH',
+            'EOS',
+            'LTC',
+            'TRX',
+            'XRP'
+        ]
         self.base_url = 'https://d6oaq62km8.execute-api.us-east-1.amazonaws.com/Prod/cartelbot'
         # self.backend_headers = {'X-API-KEY': os.getenv('BACKEND_KEY')}
         self.backend_headers = {'X-API-KEY': bot.BACKEND_KEY}
 
     @commands.command()
     @commands.cooldown(1, 10, commands.BucketType.user)
+    async def liq(self, ctx, symbol='XBTUSD'):
+        user = ctx.author
+        symbol = str(symbol).upper()
+
+        if not symbol[:2] in self.allowed_symbols:
+            await ctx.send(f"I don't know that symbol, can you try again ?")
+            return
+
+        resp = await requests_async.get(self.base_url + '/position',
+                                        headers=self.backend_headers,
+                                        params={'name': user.id})
+
+        if resp.status_code == 204:
+            await ctx.send(f'No position for {user.mention} right now!'
+                           # f'\n(or there was an error connecting to the server).'
+                           f'\nHave you DMed me your (read-only) API key yet?'
+                           f'\n(command is: . api <key> <secret>)')
+            return
+
+        resp_json = resp.json()
+
+        data = [e for e in resp_json if e['symbol'] == symbol]
+
+        if data == [] or data[0]['currentQty'] == 0:
+            liq = 0
+        else:
+            liq = data[0]['bankruptPrice']
+            if liq < 0.1 ** 4:
+                liq = f'{liq:.8f}'
+
+        message_text = f"No {symbol} position found for {user.mention} !"
+        if liq == 0:
+            message_text = f"Liquidation price for {user.mention} is {liq}"
+        await ctx.send(message_text)
+
+    @commands.command()
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def position(self, ctx, symbol='XBTUSD'):
         user = ctx.author
         symbol = str(symbol).upper()
+
+        if not symbol[:2] in self.allowed_symbols:
+            await ctx.send(f"I don't know that symbol, can you try again ?")
+            return
+
         print(f'Getting /position for user: {str(user)}')
         # action = '/position'
         # data = f'name={user.id}'
