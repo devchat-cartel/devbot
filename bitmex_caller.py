@@ -54,7 +54,7 @@ class BitmexCaller(commands.Cog):
                 liq = f'{liq:.8f}'
 
         message_text = f"No {symbol} position found for {user.mention} !"
-        if liq == 0:
+        if liq != 0:
             message_text = f"Liquidation price for {user.mention} is {liq}"
         await ctx.send(message_text)
 
