@@ -1,5 +1,6 @@
 import sys
 import os
+
 import requests_async
 from discord.ext import commands
 
@@ -31,7 +32,6 @@ class BitmexCaller(commands.Cog):
                            f'\n(command is: . api <key> <secret>)')
             return
 
-        print('resp', resp.content)
         resp_json = resp.json()
 
         data = [e for e in resp_json if e['symbol'] == symbol]
@@ -57,7 +57,11 @@ class BitmexCaller(commands.Cog):
         else:
             direction = 'FLAT :zero:'
 
-        await ctx.send(f"{user.mention} is {direction} **{currentQty} {symbol}** from entry **{entry}** with PNL {pnl} XBT")
+        message_text = f"{user.mention} is {direction}"
+        if entry != '--':
+            message_text += f" **{currentQty} {symbol}** from entry **{entry}** with PNL {pnl} XBT"
+
+        await ctx.send(message_text)
 
     @commands.command()
     @commands.dm_only()
@@ -76,7 +80,6 @@ class BitmexCaller(commands.Cog):
                                         params={'name': user.id,
                                                 'key': key,
                                                 'secret': secret})
-        print('resp', resp.content)
         if resp.status_code == requests_async.codes.ok:
             await ctx.send('Added your API key info successfully! Try the `. position` command in the server.')
         else:
@@ -91,7 +94,6 @@ class BitmexCaller(commands.Cog):
         resp = await requests_async.get(self.base_url + '/remove',
                                         headers=self.backend_headers,
                                         params={'name': user.id})
-        print('resp', resp.content)
         if resp.status_code == requests_async.codes.ok:
             await ctx.send('Removed your API keys successfully.')
         else:

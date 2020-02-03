@@ -3,17 +3,17 @@ import os
 import asyncio
 import datetime
 import textwrap
+import collections
 
 import requests
 import discord
 from discord.ext import commands
 
-GITHUB_CHECK_INTERVAL = 60
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+GIT_REPO_URL = 'https://github.com/devchat-cartel/devbot/branches'
 
 bot = commands.Bot('. ',
                    case_insensitive=True)
-
 
 def get_last_github_push():
     response = requests.get(
@@ -27,6 +27,27 @@ def get_last_github_push():
     except:
         return 'Unknown'
 
+def get_last_commit():
+    response = requests.get(
+        'https://api.github.com/repos/devchat-cartel/devbot/git/refs/heads'
+    )
+
+    branches = [
+        e['object']['url']
+        for e in response.json()
+    ]
+
+    commits = [
+        requests.get(e).json()
+        for e in branches
+    ]
+
+    messages = {
+        e['author']['date'] : e['message']
+        for e in commits
+    }
+
+    return (messages[max(messages.keys())].items())
 
 @bot.command()
 @commands.cooldown(1, 10, commands.BucketType.user)
@@ -42,22 +63,10 @@ async def echo(ctx, *, message):
     await ctx.send(message)
 
 
-async def background_task_github_push():
-    await bot.wait_until_ready()
-    general = bot.get_channel(551913608804827178)
-    latest_push = None
-    while not bot.is_closed():
-        try:
-            last_push = get_last_github_push()
-            if latest_push and last_push > latest_push:
-                latest_push = last_push
-                await general.send(f'New commit found at {latest_push} !')
-            else:
-                await asyncio.sleep(GITHUB_CHECK_INTERVAL)
-        except Exception as e:
-            print(str(e))
-            await asyncio.sleep(GITHUB_CHECK_INTERVAL)
-
+@bot.command()
+async def repo(ctx):
+    dmchannel = await ctx.author.create_dm()
+    await dmchannel.send(GIT_REPO_URL)
 
 bot.remove_command("help")
 @bot.command()
@@ -102,7 +111,7 @@ async def help(ctx):
             To erase your API keys (DM me):
             `. remove`
             """
-        )[1:-1] # remove leading and trailing newlines
+        )[1:-1]
     )
 
 
@@ -118,17 +127,6 @@ async def on_ready():
 async def on_message(message):
     if message.author == bot.user:
         return
-    print(
-        ' | '.join(
-            str(e)
-            for e in (
-                message.guild,
-                message.channel,
-                message.author,
-                message.content
-            )
-        )
-    )
     await bot.process_commands(message)
 
 
@@ -142,17 +140,10 @@ async def on_command_error(ctx, error):
 
 
 if __name__ == '__main__':
-    bot.loop.create_task(
-        background_task_github_push()
-    )
     bot.BACKEND_KEY = sys.argv[2]
     bot.load_extension('bitmex_caller')
     try:
         bot.run(
-            # os.getenv(
-            #     'TOKEN',
-            #     ''
-            # )
             sys.argv[1]
         )
     except (KeyboardInterrupt):
