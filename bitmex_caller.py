@@ -64,7 +64,7 @@ class BitmexCaller(commands.Cog):
         user = ctx.author
         symbol = str(symbol).upper()
 
-        if not symbol[:2] in self.allowed_symbols:
+        if not symbol[:3] in self.allowed_symbols:
             await ctx.send(f"I don't know that symbol, can you try again ?")
             return
 
