@@ -49,7 +49,7 @@ class BitmexCaller(commands.Cog):
         if data == [] or data[0]['currentQty'] == 0:
             liq = 0
         else:
-            liq = data[0]['bankruptPrice']
+            liq = data[0]['liquidationPrice']
             if liq < 0.1 ** 4:
                 liq = f'{liq:.8f}'
 
