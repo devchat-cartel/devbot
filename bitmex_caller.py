@@ -15,7 +15,8 @@ class BitmexCaller(commands.Cog):
             'EOS',
             'LTC',
             'TRX',
-            'XRP'
+            'XRP',
+            'ADA'
         ]
         self.base_url = 'https://d6oaq62km8.execute-api.us-east-1.amazonaws.com/Prod/cartelbot'
         # self.backend_headers = {'X-API-KEY': os.getenv('BACKEND_KEY')}
