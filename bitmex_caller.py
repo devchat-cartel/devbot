@@ -19,7 +19,6 @@ class BitmexCaller(commands.Cog):
             'ADA'
         ]
         self.base_url = 'https://d6oaq62km8.execute-api.us-east-1.amazonaws.com/Prod/cartelbot'
-        # self.backend_headers = {'X-API-KEY': os.getenv('BACKEND_KEY')}
         self.backend_headers = {'X-API-KEY': bot.BACKEND_KEY}
 
     @commands.command()
@@ -38,26 +37,31 @@ class BitmexCaller(commands.Cog):
 
         if resp.status_code == 204:
             await ctx.send(f'No position for {user.mention} right now!'
-                           # f'\n(or there was an error connecting to the server).'
                            f'\nHave you DMed me your (read-only) API key yet?'
                            f'\n(command is: . api <key> <secret>)')
             return
 
         resp_json = resp.json()
 
-        data = [e for e in resp_json if e['symbol'] == symbol]
+        if type(resp_json) == list:
+            data = [e for e in resp_json if e['symbol'] == symbol]
 
-        if data == [] or data[0]['currentQty'] == 0:
-            liq = 0
+            if data == [] or data[0]['currentQty'] == 0:
+                liq = 0
+            else:
+                liq = data[0]['liquidationPrice']
+                if liq < 0.1 ** 4:
+                    liq = f'{liq:.8f}'
+
+            message_text = f"No {symbol} position found for {user.mention} !"
+            if liq != 0:
+                message_text = f"Liquidation price for {user.mention} is {liq}"
+            await ctx.send(message_text)
+        elif 'error' in resp_json:
+            await ctx.send(f"Error: {resp_json['error']}")
         else:
-            liq = data[0]['liquidationPrice']
-            if liq < 0.1 ** 4:
-                liq = f'{liq:.8f}'
-
-        message_text = f"No {symbol} position found for {user.mention} !"
-        if liq != 0:
-            message_text = f"Liquidation price for {user.mention} is {liq}"
-        await ctx.send(message_text)
+            channel = await self.bot.fetch_channel('704468233872211988')
+            await channel.send(f"{user.name}\n{resp_json}")
 
     @commands.command()
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -70,9 +74,6 @@ class BitmexCaller(commands.Cog):
             return
 
         print(f'Getting /position for user: {str(user)}')
-        # action = '/position'
-        # data = f'name={user.id}'
-        # full_url = self.base_url + action + '?' + data
         resp = await requests_async.get(self.base_url + '/position',
                                         headers=self.backend_headers,
                                         params={'name': user.id})
@@ -86,34 +87,40 @@ class BitmexCaller(commands.Cog):
 
         resp_json = resp.json()
 
-        data = [e for e in resp_json if e['symbol'] == symbol]
+        if type(resp_json) == list:
+            data = [e for e in resp_json if e['symbol'] == symbol]
 
-        if data == [] or data[0]['currentQty'] == 0:
-            currentQty = 0
-            entry = '--'
-            pnl = 0
-        else:
-            currentQty = data[0]['currentQty']
-            pnl = data[0]['unrealisedPnl'] / (10 ** 8)
-            if pnl < 0.1 ** 4:
-                pnl = f'{pnl:.8f}'
-            if data[0]['avgEntryPrice'] > 0.1 ** 4:
-                entry = data[0]['avgEntryPrice']
+            if data == [] or data[0]['currentQty'] == 0:
+                currentQty = 0
+                entry = '--'
+                pnl = 0
             else:
-                entry = f"{data[0]['avgEntryPrice']:.8f}"
+                currentQty = data[0]['currentQty']
+                pnl = data[0]['unrealisedPnl'] / (10 ** 8)
+                if pnl < 0.1 ** 4:
+                    pnl = f'{pnl:.8f}'
+                if data[0]['avgEntryPrice'] > 0.1 ** 4:
+                    entry = data[0]['avgEntryPrice']
+                else:
+                    entry = f"{data[0]['avgEntryPrice']:.8f}"
 
-        if currentQty > 0:
-            direction = 'LONG :green_circle:'
-        elif currentQty < 0:
-            direction = 'SHORT :red_circle:'
+            if currentQty > 0:
+                direction = 'LONG :green_circle:'
+            elif currentQty < 0:
+                direction = 'SHORT :red_circle:'
+            else:
+                direction = 'FLAT :zero:'
+
+            message_text = f"{user.mention} is {direction}"
+            if entry != '--':
+                message_text += f" **{currentQty} {symbol}** from entry **{entry}** with PNL {pnl} XBT"
+
+            await ctx.send(message_text)
+        elif 'error' in resp_json:
+            await ctx.send(f"Error: {resp_json['error']}")
         else:
-            direction = 'FLAT :zero:'
-
-        message_text = f"{user.mention} is {direction}"
-        if entry != '--':
-            message_text += f" **{currentQty} {symbol}** from entry **{entry}** with PNL {pnl} XBT"
-
-        await ctx.send(message_text)
+            channel = await self.bot.fetch_channel('704468233872211988')
+            await channel.send(f"{user.name}\n{resp_json}")
 
     @commands.command()
     @commands.dm_only()
