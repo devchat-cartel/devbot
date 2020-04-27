@@ -58,7 +58,7 @@ class BitmexCaller(commands.Cog):
                 message_text = f"Liquidation price for {user.mention} is {liq}"
             await ctx.send(message_text)
         elif 'error' in resp_json:
-            await ctx.send(f"Error: {resp_json['error']}")
+            await ctx.send(f"Error: {resp_json['error']['message']}")
         else:
             channel = await self.bot.fetch_channel('704468233872211988')
             await channel.send(f"{user.name}\n{resp_json}")
@@ -80,7 +80,6 @@ class BitmexCaller(commands.Cog):
 
         if resp.status_code == 204:
             await ctx.send(f'No position for {user.mention} right now!'
-                           # f'\n(or there was an error connecting to the server).'
                            f'\nHave you DMed me your (read-only) API key yet?'
                            f'\n(command is: . api <key> <secret>)')
             return
@@ -117,7 +116,7 @@ class BitmexCaller(commands.Cog):
 
             await ctx.send(message_text)
         elif 'error' in resp_json:
-            await ctx.send(f"Error: {resp_json['error']}")
+            await ctx.send(f"Error: {resp_json['error']['message']}")
         else:
             channel = await self.bot.fetch_channel('704468233872211988')
             await channel.send(f"{user.name}\n{resp_json}")
@@ -128,7 +127,6 @@ class BitmexCaller(commands.Cog):
         user = ctx.author
         print(f'Adding API keys for user: {str(user)}')
 
-        # check parameter lengths
         if len(key) != 24 or len(secret) != 48:
             await ctx.send('There was a problem...'
                            '\nYour key should be exactly 24 characters, and your secret 48 characters.'
