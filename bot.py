@@ -74,7 +74,6 @@ async def help(ctx):
     dmchannel = await ctx.author.create_dm()
     await dmchannel.send(textwrap.dedent(f"""
             **COMMANDS**
-            ```
             `. help`
             sends you this message
 
@@ -92,9 +91,8 @@ async def help(ctx):
             `. remove`
             (DM-only) removes your Bitmex API credentials from the bot
             aliases are `. delete`
-            ```
-            **API KEY SETUP**
 
+            **API KEY SETUP**
             To retrieve your current /position, you need to tell the bot your Bitmex API keys.
 
             In your bitmex account settings, create a READ-ONLY API key (do not select 'order'
@@ -107,7 +105,6 @@ async def help(ctx):
             `. api nBRcCH6uE49KgLCMjJn09DEA -jNDyaMgwqoZT8V3-4Hmx5oA5UeNOYICNk3dl4H6w1-s5sxA`
 
             **SHOWING YOUR POSITION**
-
             In a public channel (like #bitmex), typing:
             `. position`
             will display your current XBTUSD position with the # of contracts, long/short, and entry price.
@@ -116,7 +113,6 @@ async def help(ctx):
             will display your current ETHUSD position with the # of contracts, long/short and entry price.
 
             **REMOVING YOUR API KEYS**
-
             To erase your API keys (DM me):
             `. remove`
             """
