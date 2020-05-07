@@ -75,17 +75,23 @@ async def help(ctx):
     await dmchannel.send(textwrap.dedent(f"""
             **COMMANDS**
             ```
-            . help
-            displays positiontracker's help menu
+            `. help`
+            sends you this message
 
-            . position
-            shows your current /position in a public channel
+            `. position [<symbol>]`
+            shows your current position size and entry price for <symbol> in a public channel (XBTUSD default)
+            aliases are `. p` and `. pos`
 
-            . api <key> <secret>
+            `. liquidation [<symbol>]`
+            shows your current liquidation price for <symbol> in a public channel (XBTUSD default)
+            aliases are `. l` and `. liq`
+
+            `. api <key> <secret>`
             (DM-only) sets up your Bitmex API credentials
 
-            . remove
+            `. remove`
             (DM-only) removes your Bitmex API credentials from the bot
+            aliases are `. delete`
             ```
             **API KEY SETUP**
 
@@ -104,7 +110,10 @@ async def help(ctx):
 
             In a public channel (like #bitmex), typing:
             `. position`
-            will display your current position with the # of contracts, long/short, and entry price.
+            will display your current XBTUSD position with the # of contracts, long/short, and entry price.
+
+            `. position ETHUSD`
+            will display your current ETHUSD position with the # of contracts, long/short and entry price.
 
             **REMOVING YOUR API KEYS**
 
@@ -118,7 +127,7 @@ async def help(ctx):
 @bot.event
 async def on_ready():
     print('Ready')
-    guilds = await bot.fetch_guilds(limit=5).flatten()     # guilds is now a list of Guild...
+    guilds = await bot.fetch_guilds(limit=5).flatten()
     for guild in guilds:
         print(guild)
 
@@ -136,7 +145,7 @@ async def on_command_error(ctx, error):
         # await ctx.send(f"Chill out, {ctx.author.mention}! You have to wait 10 seconds between commands... stop spamming, retard")
         return
     await ctx.send(f"Unknown command: {ctx.message.content[2:]}")
-    await commands.Bot.on_command_error(bot, ctx, error)    # pretty much just for printing to console
+    await commands.Bot.on_command_error(bot, ctx, error)
 
 
 if __name__ == '__main__':

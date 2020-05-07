@@ -21,9 +21,9 @@ class BitmexCaller(commands.Cog):
         self.base_url = 'https://d6oaq62km8.execute-api.us-east-1.amazonaws.com/Prod/cartelbot'
         self.backend_headers = {'X-API-KEY': bot.BACKEND_KEY}
 
-    @commands.command()
+    @commands.command(name='liquidation', aliases=['l', 'liq'])
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def liq(self, ctx, symbol='XBTUSD'):
+    async def show_liquidation_price(self, ctx, symbol='XBTUSD'):
         user = ctx.author
         symbol = str(symbol).upper()
 
@@ -63,9 +63,9 @@ class BitmexCaller(commands.Cog):
             channel = await self.bot.fetch_channel('704468233872211988')
             await channel.send(f"{user.name}\n{resp_json}")
 
-    @commands.command()
+    @commands.command(name='position', aliases=['p', 'pos'])
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def position(self, ctx, symbol='XBTUSD'):
+    async def show_current_position(self, ctx, symbol='XBTUSD'):
         user = ctx.author
         symbol = str(symbol).upper()
 
@@ -143,7 +143,7 @@ class BitmexCaller(commands.Cog):
             await ctx.send(f'Add action failed: status code {resp.status_code}. Please try again later.')
             return
 
-    @commands.command()
+    @commands.command(aliases=['delete'])
     @commands.dm_only()
     async def remove(self, ctx):
         user = ctx.author
