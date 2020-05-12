@@ -1,0 +1,11 @@
+aiohttp<3.6.0,>=3.3.0
+async-timeout
+certifi
+chardet
+discord.py
+idna
+multidict
+requests
+requests_async
+urllib3
+websockets<7.0,>=6.0
