@@ -22,7 +22,7 @@ namespace CartelBotAPI.Controllers
     {
         [Route("add")]
         [HttpGet]
-        public async Task<IActionResult> add([FromQuery]string name, [FromQuery]string key, [FromQuery]string secret) //bitmex - btc only for now
+        public async Task<IActionResult> add([FromQuery]string name, [FromQuery]string key, [FromQuery]string secret)
         {
             // if empty params bad request
             try
