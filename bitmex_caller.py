@@ -20,6 +20,62 @@ class BitmexCaller(commands.Cog):
         ]
         self.base_url = 'https://d6oaq62km8.execute-api.us-east-1.amazonaws.com/Prod/cartelbot'
         self.backend_headers = {'X-API-KEY': bot.BACKEND_KEY}
+        self.pau = '275366370403811329'
+
+    @commands.command(name='pau')
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def show_pau(self, ctx, symbol='XBTUSD'):
+        user = ctx.author
+        symbol = str(symbol).upper()
+
+        if not symbol[:3] in self.allowed_symbols:
+            await ctx.send(f"I don't know that symbol, can you try again ?")
+            return
+
+        resp = await requests_async.get(self.base_url + '/position',
+                                        headers=self.backend_headers,
+                                        params={'name': self.pau})
+
+        if resp.status_code == 204:
+            await ctx.send(f'PAU is busy right now, check later {user.mention} right now!')
+            return
+        
+        resp_json = resp.json()
+
+        if type(resp_json) == list:
+            data = [e for e in resp_json if e['symbol'] == symbol]
+
+            if data == [] or data[0]['currentQty'] == 0:
+                currentQty = 0
+                entry = '--'
+                pnl = 0
+            else:
+                currentQty = data[0]['currentQty']
+                pnl = data[0]['unrealisedPnl'] / (10 ** 8)
+                if pnl < 0.1 ** 4:
+                    pnl = f'{pnl:.8f}'
+                if data[0]['avgEntryPrice'] > 0.1 ** 4:
+                    entry = data[0]['avgEntryPrice']
+                else:
+                    entry = f"{data[0]['avgEntryPrice']:.8f}"
+
+            if currentQty > 0:
+                direction = 'LONG :green_circle:'
+            elif currentQty < 0:
+                direction = 'SHORT :red_circle:'
+            else:
+                direction = 'FLAT :zero:'
+
+            message_text = f"PAU is {direction}"
+            if entry != '--':
+                message_text += f" **{currentQty} {symbol}** from entry **{entry}** with PNL {pnl} XBT"
+
+            await ctx.send(message_text)
+        elif 'error' in resp_json:
+            await ctx.send(f"Error: {resp_json['error']['message']}")
+        else:
+            channel = await self.bot.fetch_channel('704468233872211988')
+            await channel.send(f"{user.name}\n{resp_json}")
 
     @commands.command(name='liquidation', aliases=['l', 'liq'])
     @commands.cooldown(1, 10, commands.BucketType.user)
