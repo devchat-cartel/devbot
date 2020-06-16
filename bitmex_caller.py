@@ -93,7 +93,7 @@ class BitmexCaller(commands.Cog):
                                         params={'name': self.bort})
 
         if resp.status_code == 204:
-            await ctx.send(f'PAU is busy right now, check later {user.mention} right now!')
+            await ctx.send(f'bort is busy right now, check later {user.mention} right now!')
             return
         
         resp_json = resp.json()
@@ -122,7 +122,7 @@ class BitmexCaller(commands.Cog):
             else:
                 direction = 'FLAT :zero:'
 
-            message_text = f"PAU is {direction}"
+            message_text = f"bort is {direction}"
             if entry != '--':
                 message_text += f" **{currentQty} {symbol}** from entry **{entry}** with PNL {pnl} XBT"
 
