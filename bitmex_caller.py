@@ -66,7 +66,9 @@ class BitmexCaller(commands.Cog):
             else:
                 direction = 'FLAT :zero:'
 
+<<<<<<< HEAD
             message_text = f"PAU is {direction}"
+>>>>>>> 30dc3f70ead0129d9e4f105c0fc2ba0d778d43cb
             if entry != '--':
                 message_text += f" **{currentQty} {symbol}** from entry **{entry}** with PNL {pnl} XBT"
 
