@@ -120,7 +120,7 @@ class BitmexCaller(commands.Cog):
             channel = await self.bot.fetch_channel('704468233872211988')
             await channel.send(f"{user.name}\n{resp_json}")
 
-    @commands.command(name='pnl', aliases=['rnpl', 'pnl'])
+    @commands.command(name='pnl', aliases=['rnpl'])
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def show_profits_and_losses(self, ctx, symbol='XBTUSD'):
         user = ctx.author
