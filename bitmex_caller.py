@@ -119,6 +119,49 @@ class BitmexCaller(commands.Cog):
             channel = await self.bot.fetch_channel('704468233872211988')
             await channel.send(f"{user.name}\n{resp_json}")
 
+    @commands.command(name='pnl', aliases=['rnpl', 'pnl'])
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def show_profits_and_losses(self, ctx, symbol='XBTUSD'):
+        user = ctx.author
+        symbol = str(symbol).upper()
+
+        if not symbol[:3] in self.allowed_symbols:
+            await ctx.send(f"I don't know that symbol, can you try again ?")
+            return
+
+        resp = await requests_async.get(self.base_url + '/position',
+                                        headers=self.backend_headers,
+                                        params={'name': user.id})
+
+        if resp.status_code == 204:
+            await ctx.send(f'No position for {user.mention} right now!'
+                           f'\nHave you DMed me your (read-only) API key yet?'
+                           f'\n(command is: . api <key> <secret>)')
+            return
+
+        resp_json = resp.json()
+
+        if type(resp_json) == list:
+            data = [e for e in resp_json if e['symbol'] == symbol]
+
+            if data == [] or data[0]['currentQty'] == 0:
+                pnl = 0
+            else:
+                pnl = data[0]['realisedPnl']
+                upnl = data[0]['unrealisedPnl']
+
+            message_text = f"No {symbol} Pnl found for {user.mention} !"
+            if pnl > 0:
+                message_text = f"Pnl for {user.mention} :green_circle:   RPnl: {pnl}   UPnl: {upnl}"
+            elif pnl < 0:
+                message_text = f"Pnl for {user.mention} :red_circle:   RPnl: -{pnl}   UPnl: -{upnl}"
+            await ctx.send(message_text)
+        elif 'error' in resp_json:
+            await ctx.send(f"Error: {resp_json['error']['message']}")
+        else:
+            channel = await self.bot.fetch_channel('704468233872211988')
+            await channel.send(f"{user.name}\n{resp_json}")
+
     @commands.command(name='position', aliases=['p', 'pos'])
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def show_current_position(self, ctx, symbol='XBTUSD'):
