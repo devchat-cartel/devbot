@@ -148,11 +148,8 @@ class BitmexCaller(commands.Cog):
             if data == [] or data[0]['currentQty'] == 0:
                 pnl = 0
             else:
-                pnl = data[0]['realisedPnl']
-                upnl = data[0]['unrealisedPnl']
-
-                pnl = f'{pnl:.8f}'
-                upnl = f'{upnl:.8f}'
+                pnl = data[0]['realisedPnl'] / (10 ** 8)
+                upnl = data[0]['unrealisedPnl'] / (10 ** 8)
 
             message_text = f"No {symbol} Pnl found for {user.mention} !"
             if pnl > 0:
