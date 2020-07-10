@@ -157,9 +157,9 @@ class BitmexCaller(commands.Cog):
                     upnl = f'{upnl:.8f}'
 
             message_text = f"No {symbol} Pnl found for {user.mention} !"
-            if int(pnl) > 0:
+            if float(pnl) > 0:
                 message_text = f"Profit for {user.mention}   RPnl: {pnl}:green_circle:   UPnl: {upnl}:green_circle:"
-            elif int(pnl) < 0:
+            elif float(pnl) < 0:
                 message_text = f"Losses for {user.mention}   RPnl: -{pnl}:red_circle:   UPnl: -{upnl}:red_circle:"
             await ctx.send(message_text)
         elif 'error' in resp_json:
