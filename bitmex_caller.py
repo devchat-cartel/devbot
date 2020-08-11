@@ -25,7 +25,7 @@ class BitmexCaller(commands.Cog):
     @commands.command(name='n', aliases=['nigger'])
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def nicecar(self, ctx):
-        ctx.send(f"i")
+        await ctx.send(f"i")
 
     @commands.command(name='pau')
     @commands.cooldown(1, 10, commands.BucketType.user)
