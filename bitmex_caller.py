@@ -22,6 +22,10 @@ class BitmexCaller(commands.Cog):
         self.backend_headers = {'X-API-KEY': bot.BACKEND_KEY}
         self.pau = '275366370403811329'
         self.bort = '396960313687408661'
+    @commands.command(name='n')
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def nicecar(self, ctx):
+        ctx.send(f"i")
 
     @commands.command(name='pau')
     @commands.cooldown(1, 10, commands.BucketType.user)
