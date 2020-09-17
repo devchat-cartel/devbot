@@ -16,7 +16,8 @@ class BitmexCaller(commands.Cog):
             'LTC',
             'TRX',
             'XRP',
-            'ADA'
+            'ADA',
+            'LINK'
         ]
         self.base_url = 'https://d6oaq62km8.execute-api.us-east-1.amazonaws.com/Prod/cartelbot'
         self.backend_headers = {'X-API-KEY': bot.BACKEND_KEY}
